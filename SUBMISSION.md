@@ -1,63 +1,211 @@
-# Ajaia Docs — Submission
+﻿# Ajaia Docs - Submission
 
 ## Live Application
 
-NOT DEPLOYED
+https://ajaia-docs-three-alpha.vercel.app/dashboard
 
-No deployment credentials/hosted database were available in the authoring
-environment. The project is deployment-ready — see "Deployment" in
-README.md for the exact Vercel + Postgres steps.
+The application is deployed on Vercel and connected to PostgreSQL via Supabase.
 
 ## Source Code
 
-Included in this submission package.
+GitHub repository:
+
+https://github.com/Nishantdubey7/ajaia-docs
+
+The repository contains the complete source code, Prisma schema and migrations,
+automated tests, configuration, and project documentation.
 
 ## Demo Users
+
+The application includes three seeded demo users:
 
 - Nishant Dubey
 - Rahul Sharma
 - Priya Mehta
 
+There are no passwords. A user switcher is intentionally used as a lightweight
+authentication simulation for this assignment.
+
 ## Implemented Features
 
-- Create, rename, edit, save, and reopen documents; content persists across refresh (Prisma/PostgreSQL).
-- Tiptap rich-text editor: bold, italic, underline, H1, H2, bullet list, numbered list, undo, redo.
-- File import for `.txt` (full) and `.md` (headings/bullets/paragraphs), with validation for unsupported types, empty files, and import failures.
-- Demo-user switcher (cookie-based) standing in for OAuth.
-- Sharing: owner shares a document with another seeded user; duplicate shares are prevented (DB unique constraint + app-level check); "people with access" list shows owner + shared users.
-- Server-side authorization on every document read/write: a user can access a document only if they own it or it's been shared with them — enforced in `lib/authorization.ts` and used by every API route, not just the UI.
-- Dashboard with "My Documents" / "Shared With Me", last-updated times, owner/shared badges, empty states, loading states, and error states.
-- Automated test (`tests/authorization.test.ts`) covering the exact scenario in Requirement 8, plus import validation.
+### Document Creation and Editing
+
+- Create new documents.
+- Rename documents.
+- Edit documents in the browser.
+- Autosave document changes.
+- Reopen documents after navigation or refresh.
+- Persist document content using PostgreSQL and Prisma.
+
+### Rich Text Editing
+
+The editor is implemented using Tiptap and supports:
+
+- Bold
+- Italic
+- Underline
+- H1 headings
+- H2 headings
+- Bulleted lists
+- Numbered lists
+- Undo
+- Redo
+
+Document content is stored as structured editor JSON.
+
+### File Import
+
+Supported formats:
+
+- `.txt`
+- `.md`
+
+TXT files are imported as editable document content.
+
+Markdown files support lightweight structural parsing for:
+
+- Headings
+- Bullets
+- Paragraphs
+
+The application validates unsupported file types and empty files.
+
+### Sharing
+
+Document owners can share documents with other seeded users.
+
+The sharing workflow includes:
+
+- Document ownership
+- Explicit user sharing
+- Shared document listing
+- Duplicate-share prevention
+- Owner and shared-user visibility
+- Server-side access control
+
+### Authorization
+
+Authorization is enforced on the server rather than relying only on
+frontend visibility.
+
+A user can access a document only when:
+
+1. They own the document, or
+2. The document has explicitly been shared with them.
+
+Unauthorized document access is rejected by the server.
+
+### Dashboard
+
+The dashboard provides:
+
+- My Documents
+- Shared With Me
+- Last-updated information
+- Owner/shared indicators
+- Loading states
+- Empty states
+- Error states
+- Demo-user switching
 
 ## Reviewer Test Flow
 
-1. Select Nishant.
-2. Create a document.
-3. Add formatted text (bold, a heading, a bullet list).
-4. Save (autosaves ~800ms after you stop typing).
-5. Refresh and verify persistence.
-6. Rename the document from the editor header.
-7. Go back to the dashboard, click Import, and import a `.txt` file.
-8. Open a document you own, click Share, and share it with Rahul.
-9. Switch the user dropdown to Rahul.
-10. Open "Shared With Me" and confirm the document appears and opens.
-11. Switch to Priya and confirm she cannot open that document (and it does not appear in her lists) unless it is explicitly shared with her too.
+### 1. Create and edit a document
 
-## Known Limitations
+1. Select Nishant Dubey.
+2. Click New Document.
+3. Add a heading.
+4. Add bold text.
+5. Add a bullet list.
+6. Stop typing and allow autosave to complete.
+7. Refresh the page.
+8. Confirm the document and formatting persist.
 
-- No real authentication — demo-user switcher only, by design.
-- No real-time collaboration, comments, or version history — explicitly out of scope per the assignment.
-- `.md` import is a light structural parser (headings, bullets, paragraphs), not a full CommonMark implementation.
-- Concurrent edits to the same document from two sessions use last-write-wins; there's no merge or conflict UI.
-- **Not machine-verified**: the authoring sandbox had no network access, so `npm install`/`lint`/`typecheck`/`test`/`build` could not actually be run here. Run them yourself after `npm install` in a normal environment before treating this as a verified build — see README.md.
+### 2. Rename a document
 
-## Future Improvements
+1. Open the document.
+2. Rename it from the editor header.
+3. Return to the dashboard.
+4. Confirm the updated title is displayed.
 
-- Real authentication (e.g. NextAuth) in place of the demo-user switcher.
-- Revoke-share and change-permission-level controls in the share dialog.
-- A richer `.md` importer (tables, nested lists, links, inline formatting).
-- Optimistic UI + conflict detection for concurrent edits.
+### 3. Import a file
 
-## AI Workflow
+1. Return to the dashboard.
+2. Click Import.
+3. Select a `.txt` file.
+4. Confirm the imported content becomes a new editable document.
 
-See AI_WORKFLOW.md.
+### 4. Share a document
+
+1. Select Nishant Dubey.
+2. Open a document owned by Nishant.
+3. Click Share.
+4. Share the document with Rahul Sharma.
+5. Switch the current user to Rahul Sharma.
+6. Open Shared With Me.
+7. Confirm the shared document appears and can be opened.
+
+### 5. Verify authorization
+
+1. Switch the current user to Priya Mehta.
+2. Confirm the document shared only with Rahul does not appear in Priya's
+   accessible documents.
+3. Document access is also protected server-side, so knowing a document ID
+   does not bypass authorization.
+
+## Verification
+
+The application was fully verified locally before deployment.
+
+### Local Verification
+
+- `npm install` - PASS
+- `npm run typecheck` - PASS
+- `npm run lint` - PASS
+- `npm test` - PASS
+- Automated tests: 9/9 PASS
+- `npm run build` - PASS
+- Prisma database setup - PASS
+- PostgreSQL/Supabase connection - PASS
+- Demo-user seeding - PASS
+- Manual end-to-end testing - PASS
+
+### Production Verification
+
+The deployed Vercel application was manually tested for:
+
+- Dashboard loading
+- Demo-user switching
+- Document creation
+- Rich-text editing
+- Autosave
+- Document persistence
+- Document renaming
+- TXT file import
+- Document sharing
+- Shared With Me workflow
+- Server-side access control
+
+Production URL:
+
+https://ajaia-docs-three-alpha.vercel.app/dashboard
+
+## Automated Tests
+
+The Vitest test suite contains 9 passing tests covering:
+
+- Owner document access
+- Access denial before sharing
+- Access after explicit sharing
+- Unauthorized third-party access
+- No-current-user authorization
+- Owner/share relationship behavior
+- Unsupported file validation
+- Empty file validation
+- TXT file parsing
+
+Command:
+
+```bash
+npm test
+```
